@@ -12,50 +12,69 @@ body {
   line-height: 1.5;
 }
 
-#search-box {
+.container {
+  width: auto;
+  height: 80px;
+  background-color: rgb(94, 94, 206);
+}
+
+.search-form {
   font: inherit;
-  padding: 8px;
+  padding-top: 20px;
+    width: 50%;
+    margin: auto;
   max-width: 320px;
   margin-bottom: 16px;
 }
+input {
+  position: absolute;
+  height: 40px;
+  width: 320px;
+  border-radius: 5px;
+}
 
-li {
+button {
+  position: relative;
+  height: 40px;
+  width: 40px;
+  margin-left: 280px;
+  border-radius: 5px;
+  background-image: url(../img/search.svg);
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* .gallery {
   display: flex;
-  gap: 5px;
+  gap: 15px;
   align-items: center;
   list-style: none;
   text-transform: capitalize;
   font-size: 15px;
 }
 
-p {
-  margin: 2px;
+*/ .photo-card {
+  margin-top: 5px;
+  border: solid 1px tomato;
+  max-width: 500px;
 }
 
-ul {
-  margin: 0;
-  padding-left: 10px;
+.info {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  text-transform: capitalize;
+  font-size: 15px;
 }
 
-li:hover {
+.info-item {}
+
+.photo-card:hover {
   scale: 101%;
   cursor: pointer;
   transition-duration: 250ms;
   transition-timing-function: linear;
-}
-
-.country-item {
-  font-size: 26px;
-}
-
-.card-title {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.card-info {
-  font-weight: 500;
-  font-style: italic;
-  font-size: 18px;
 }
