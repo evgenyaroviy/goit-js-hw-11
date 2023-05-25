@@ -10,15 +10,17 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '36658431-70b367d2ef8581f2f498a1946';
 const parameters = 'image_type=photo&orientation=horizontal&safesearch=true&per_page=40'
-let page;
+
 const refs = {
   form: document.querySelector('form'),
   input: document.querySelector('input'),
-  button: document.querySelector('button'),
+  button: document.querySelector('.btn'),
+  buttonMore: document.querySelector('.more-btn'),
   gallery: document.querySelector('.gallery')
 }
 
 refs.form.addEventListener('submit', onInput)
+refs.buttonMore.addEventListener('click', loadMorePhoto)
 
 
 function onInput(e) {
@@ -31,7 +33,32 @@ function clearList() {
   refs.gallery.innerHTML = '';
 }
 
+// let options = {
+//     root: null,
+//     rootMargin: "400px",
+//     threshold: 0,
+// };
 
+// let observer = new IntersectionObserver(handlerPagination, options);
+
+// function handlerPagination(entries, observer) {
+//   const guard = document.querySelector('.js-guard');
+//   const params = refs.input.value;
+//   entries.forEach((entry) => {
+//         if (entry.isIntersecting) {
+//           page += 1;
+//           onInput(params)
+//               .then(data => {
+//                   console.log(data)
+//                     refs.gallery.insertAdjacentHTML('beforeend', createCard(data.hitDataResp));
+//                     let gallery = new SimpleLightbox('.gallery a');
+//                     if (data.total_pages <= data.page) {
+//                         observer.unobserve(guard);
+//                     }
+//                 })
+//         }
+//     })
+// }
 
 async function requestToBeckend(params) {
   clearList()
@@ -42,54 +69,22 @@ async function requestToBeckend(params) {
     console.log(dataResp)
     console.log(hitDataResp)
 
-    await searchError(dataResp);
-    await addCard(hitDataResp);
+    searchError(dataResp);
+    addCard(hitDataResp);
 
   } catch (error) {
     Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
   };
 }
-
-function searchError(dataResp) {
-  const { total, totalHits, hits } = dataResp;
-  if (Number(hits.length) === 0) {
-    throw new Error('No results found');
-  }
-  Notiflix.Notify.success(`Hooray! We found ${dataResp.totalHits} images.`);
-  return { total, totalHits, hits };
-}
-
-// let options = {
-//   root: null,
-//   rootMargin: "400px",
-//   threshold: 0,
-// };
-// let observer = new IntersectionObserver(handlerPagination, options);
-
-// const guard = document.createElement('div');
-// guard.id = 'sentinel';
-// refs.gallery.append(guard);
-
-// observer.observe(guard);
-
-// function handlerPagination(entries, observer) {
-//   entries.forEach((entry) => {
-//     if (entry.isIntersecting) {
-//       page += 1;
-//       console.log(refs.input.value)
-//       requestToBeckend(refs.input.value)
-//         .then(({ hitDataResp }) => {
-//           refs.gallery.insertAdjacentHTML('beforeend', createCard(hitDataResp));
-//           let gallery = new SimpleLightbox('.gallery a');
-
-//           if (page >= Math.ceil(data.totalHits / 40)) {
-//             observer.unobserve(guard);
-//           }
-//         })
-//     }
-//   })
-// }
-
+// requestToBeckend()
+//     .then(hitDataResp => {
+//         refs.gallery.insertAdjacentHTML('beforeend', createCard(hitDataResp));
+//         let gallery = new SimpleLightbox('.gallery a');
+//         if (data.total_pages > data.page) {
+//             observer.observe(guard);
+//         }
+//     })
+//     .catch(err => console.log(err))
 
 function createCard(hitDataResp) {
   console.log(hitDataResp)
@@ -122,6 +117,19 @@ function createCard(hitDataResp) {
   }).join('');
 }
 
+
+
+function searchError(dataResp) {
+  const { total, totalHits, hits } = dataResp;
+  if (Number(hits.length) === 0) {
+    throw new Error('No results found');
+  }
+  Notiflix.Notify.success(`Hooray! We found ${dataResp.totalHits} images.`);
+  return { total, totalHits, hits };
+}
+
+
+
 function addCard(hitDataResp) {
   refs.gallery.insertAdjacentHTML('beforeend', createCard(hitDataResp));
   let gallery = new SimpleLightbox('.gallery a');
@@ -136,3 +144,9 @@ function addCard(hitDataResp) {
     });
   });
 }
+
+function loadMorePhoto(params) {
+
+
+}
+
