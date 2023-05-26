@@ -5,27 +5,25 @@ import SimpleLightbox from "simplelightbox";
 // Додатковий імпорт стилів
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-
-
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '36658431-70b367d2ef8581f2f498a1946';
 const parameters = 'image_type=photo&orientation=horizontal&safesearch=true&per_page=40'
-
+let page = 1;
 const refs = {
   form: document.querySelector('form'),
   input: document.querySelector('input'),
   button: document.querySelector('.btn'),
   buttonMore: document.querySelector('.more-btn'),
-  gallery: document.querySelector('.gallery')
+  gallery: document.querySelector('.gallery'),
 }
 
-refs.form.addEventListener('submit', onInput)
-refs.buttonMore.addEventListener('click', loadMorePhoto)
-
+refs.form.addEventListener('submit', onInput);
+refs.buttonMore.addEventListener('click', loadMorePhoto);
 
 function onInput(e) {
   e.preventDefault();
   const params = refs.input.value;
+  console.log(params)
   requestToBeckend(params)
 }
 
@@ -33,66 +31,33 @@ function clearList() {
   refs.gallery.innerHTML = '';
 }
 
-// let options = {
-//     root: null,
-//     rootMargin: "400px",
-//     threshold: 0,
-// };
-
-// let observer = new IntersectionObserver(handlerPagination, options);
-
-// function handlerPagination(entries, observer) {
-//   const guard = document.querySelector('.js-guard');
-//   const params = refs.input.value;
-//   entries.forEach((entry) => {
-//         if (entry.isIntersecting) {
-//           page += 1;
-//           onInput(params)
-//               .then(data => {
-//                   console.log(data)
-//                     refs.gallery.insertAdjacentHTML('beforeend', createCard(data.hitDataResp));
-//                     let gallery = new SimpleLightbox('.gallery a');
-//                     if (data.total_pages <= data.page) {
-//                         observer.unobserve(guard);
-//                     }
-//                 })
-//         }
-//     })
-// }
-
 async function requestToBeckend(params) {
+  console.log(params)
   clearList()
   try {
     const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${params}&${parameters}&${page}`)
     const dataResp = response.data;
-    const hitDataResp = response.data.hits;
-    console.log(dataResp)
-    console.log(hitDataResp)
+    // const hitDataResp = response.data.hits;
+    // console.log(dataResp)
+    // console.log(hitDataResp.length)
 
     searchError(dataResp);
-    addCard(hitDataResp);
-
+    addCard(dataResp.hits);
+    if (Number(dataResp.hits.length) >= 40) {
+      refs.buttonMore.classList.remove("is-hidden");
+    }
   } catch (error) {
     Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
   };
 }
-// requestToBeckend()
-//     .then(hitDataResp => {
-//         refs.gallery.insertAdjacentHTML('beforeend', createCard(hitDataResp));
-//         let gallery = new SimpleLightbox('.gallery a');
-//         if (data.total_pages > data.page) {
-//             observer.observe(guard);
-//         }
-//     })
-//     .catch(err => console.log(err))
 
 function createCard(hitDataResp) {
-  console.log(hitDataResp)
+  // console.log(hitDataResp)
   return hitDataResp.map(({ webformatURL, tags, likes, views, comments, downloads, largeImageURL }) => {
     return `
     <div class="photo-card">
     <a href="${largeImageURL}">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" width="400px" height="250px" />
+  <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
   </a>
   <div class="info">
     <p class="info-item">
@@ -117,36 +82,50 @@ function createCard(hitDataResp) {
   }).join('');
 }
 
-
-
 function searchError(dataResp) {
-  const { total, totalHits, hits } = dataResp;
+  const { totalHits, hits } = dataResp;
+  // console.log({ totalHits, hits })
   if (Number(hits.length) === 0) {
     throw new Error('No results found');
   }
   Notiflix.Notify.success(`Hooray! We found ${dataResp.totalHits} images.`);
-  return { total, totalHits, hits };
+  return { totalHits, hits };
 }
 
-
-
 function addCard(hitDataResp) {
+  // console.log(hitDataResp)
   refs.gallery.insertAdjacentHTML('beforeend', createCard(hitDataResp));
   let gallery = new SimpleLightbox('.gallery a');
   gallery.on('show.simplelightbox', function addCard() {
-    const { height: cardHeight } = document
-      .querySelector(".gallery")
-      .firstElementChild.getBoundingClientRect();
-
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: "smooth",
-    });
   });
 }
 
-function loadMorePhoto(params) {
-
-
+async function loadMorePhoto() {
+  try {
+    page += 1;
+    const params = refs.input.value;
+    const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${params}&${parameters}&page=${page}`);
+    const dataResp = response.data;
+    const hitDataResp = response.data.hits;
+    refs.gallery.insertAdjacentHTML('beforeend', createCard(hitDataResp));
+    onScroll()
+    let gallery = new SimpleLightbox('.gallery a');
+    gallery.refresh();
+    if (refs.gallery.childElementCount >= dataResp.totalHits) {
+      refs.buttonMore.classList.add("is-hidden");
+      Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results.`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
+function onScroll() {
+  const { height: cardHeight } = document.querySelector(".gallery")
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: "smooth",
+  });
+}

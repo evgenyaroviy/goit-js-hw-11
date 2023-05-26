@@ -48,13 +48,13 @@ input {
 }
 
 .more-btn {
+  display: block;
+  margin: 0 auto;
   font-size: 20px;
   height: 60px;
   width: 140px;
-  align-items: center;
-  margin-left: 45%;
   border-radius: 5px;
-
+  margin-top: 20px;
 }
 
 button:hover {
@@ -62,8 +62,10 @@ button:hover {
   cursor: pointer;
   transition-duration: 250ms;
 }
+
 .gallery {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 40px;
   align-items: center;
@@ -73,7 +75,7 @@ button:hover {
 }
 
 .photo-card {
-  flex-basis: calc(24% - 15px);
+  width: 400px;
   margin-top: 5px;
   border: solid 1px black;
   overflow: hidden;
@@ -86,7 +88,7 @@ a {
 
 .info {
   display: flex;
-  gap: 40px;
+  gap: 15px;
   justify-content: center;
   align-items: center;
   list-style: none;
@@ -95,7 +97,10 @@ a {
   margin: 10px;
 }
 
-.info-item {}
+img {
+  width: 400px;
+  height: 250px;
+}
 
 .photo-card:hover {
   scale: 101%;
@@ -103,6 +108,7 @@ a {
   transition-duration: 250ms;
   transition-timing-function: linear;
 }
+
 .is-hidden {
   display: none;
 }
